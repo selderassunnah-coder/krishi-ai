@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 const nav = [
   { href: "/#features", label: "ফিচার" },
@@ -11,7 +11,7 @@ const nav = [
   { href: "/about", label: "আমাদের সম্পর্কে" },
 ];
 
-export function SiteShell({ children }: { children: React.ReactNode }) {
+export function SiteShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="flex min-h-dvh flex-col">
