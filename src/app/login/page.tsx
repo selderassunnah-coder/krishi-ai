@@ -1,18 +1,26 @@
 import { SiteShell } from "@/components/site-shell";
+import { AuthForm } from "@/components/auth-form";
+import { signIn } from "@/app/actions/auth";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; error?: string }>;
+}) {
+  const params = await searchParams;
+  const nextPath = params.next?.startsWith("/") ? params.next : "/dashboard";
+
   return (
     <SiteShell>
       <main className="mx-auto max-w-md px-4 py-16">
-        <h1 className="font-display text-3xl font-semibold">শুরু করুন</h1>
-        <p className="mt-3 text-muted">পরবর্তী ধাপে নিরাপদ অ্যাকাউন্ট যুক্ত হবে।</p>
-        <form className="mt-8 space-y-4">
-          <input className="h-11 w-full rounded-xl border border-border bg-surface px-3" placeholder="ইমেইল" />
-          <input type="password" className="h-11 w-full rounded-xl border border-border bg-surface px-3" placeholder="পাসওয়ার্ড" />
-          <button type="button" className="h-11 w-full rounded-full bg-primary font-semibold text-primary-fg">
-            লগইন (শীঘ্রই)
-          </button>
-        </form>
+        <h1 className="font-display text-3xl font-semibold">লগইন</h1>
+        <p className="mt-3 text-muted">আপনার খামার ড্যাশবোর্ডে প্রবেশ করুন।</p>
+        {params.error ? (
+          <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700">
+            অথেনটিকেশন ব্যর্থ। আবার চেষ্টা করুন।
+          </p>
+        ) : null}
+        <AuthForm mode="login" action={signIn} nextPath={nextPath} />
       </main>
     </SiteShell>
   );
