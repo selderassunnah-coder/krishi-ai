@@ -1,6 +1,6 @@
 {
   "name": "krishi-ai",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">=20"
@@ -11,6 +11,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.49.1",
     "lucide-react": "^0.510.0",
     "next": "15.2.8",
     "react": "^19.0.0",
