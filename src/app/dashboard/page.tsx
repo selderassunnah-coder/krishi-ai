@@ -4,7 +4,26 @@ import { SiteShell } from "@/components/site-shell";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
+    return (
+      <SiteShell>
+        <main className="mx-auto max-w-lg px-4 py-16">
+          <h1 className="font-display text-2xl font-semibold">সেটআপ বাকি</h1>
+          <p className="mt-3 text-muted">
+            Vercel-এ NEXT_PUBLIC_SUPABASE_URL ও NEXT_PUBLIC_SUPABASE_ANON_KEY
+            সেট করে Redeploy করুন।
+          </p>
+        </main>
+      </SiteShell>
+    );
+  }
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -65,8 +84,7 @@ export default async function DashboardPage() {
 
           {!farms || farms.length === 0 ? (
             <p className="mt-4 text-sm text-muted">
-              এখনো কোনো খামার নেই। Phase 2-এর পরের ধাপে খামার তৈরি ফর্ম যুক্ত হবে।
-              আপাতত ডাটাবেস টেবিল প্রস্তুত।
+              এখনো কোনো খামার নেই। পরের ধাপে খামার তৈরি ফর্ম যুক্ত হবে।
             </p>
           ) : (
             <ul className="mt-4 space-y-3">
@@ -78,7 +96,7 @@ export default async function DashboardPage() {
                   <p className="font-medium">{farm.name}</p>
                   <p className="text-sm text-muted">
                     {farm.district || "জেলা উল্লেখ নেই"}
-                    {farm.sectors?.length
+                    {Array.isArray(farm.sectors) && farm.sectors.length
                       ? ` · ${farm.sectors.join(", ")}`
                       : ""}
                   </p>
@@ -86,19 +104,6 @@ export default async function DashboardPage() {
               ))}
             </ul>
           )}
-        </section>
-
-        <section className="mt-6 grid gap-4 sm:grid-cols-3">
-          {[
-            ["প্রোফাইল", profile?.district ? `জেলা: ${profile.district}` : "প্রোফাইল আপডেট করুন"],
-            ["সেশন", user.email || "—"],
-            ["পরবর্তী", "খামার তৈরি + ফসল মডিউল"],
-          ].map(([title, body]) => (
-            <div key={title} className="rounded-2xl bg-surface p-4">
-              <p className="text-xs text-muted">{title}</p>
-              <p className="mt-1 text-sm font-medium">{body}</p>
-            </div>
-          ))}
         </section>
       </main>
     </SiteShell>
