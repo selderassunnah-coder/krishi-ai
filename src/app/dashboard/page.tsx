@@ -3,8 +3,11 @@ import { redirect } from "next/navigation";
 import { SiteShell } from "@/components/site-shell";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
+import { FARM_SECTORS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
+
+const sectorLabel = Object.fromEntries(FARM_SECTORS.map((s) => [s.id, s.label]));
 
 export default async function DashboardPage() {
   if (
@@ -41,7 +44,7 @@ export default async function DashboardPage() {
 
   const { data: farms } = await supabase
     .from("farms")
-    .select("id, name, district, sectors")
+    .select("id, name, district, area_acres, sectors")
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false });
 
@@ -76,32 +79,45 @@ export default async function DashboardPage() {
             <h2 className="text-lg font-semibold">আমার খামার</h2>
             <Link
               href="/farm/new"
-              className="text-sm font-semibold text-primary hover:underline"
+              className="inline-flex h-10 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-fg"
             >
               + নতুন খামার
             </Link>
           </div>
 
           {!farms || farms.length === 0 ? (
-            <p className="mt-4 text-sm text-muted">
-              এখনো কোনো খামার নেই। পরের ধাপে খামার তৈরি ফর্ম যুক্ত হবে।
-            </p>
+            <div className="mt-6 rounded-2xl border border-dashed border-border bg-bg px-4 py-10 text-center">
+              <p className="font-medium">এখনো কোনো খামার নেই</p>
+              <p className="mt-2 text-sm text-muted">প্রথম খামার তৈরি করে শুরু করুন।</p>
+              <Link
+                href="/farm/new"
+                className="mt-4 inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-fg"
+              >
+                খামার তৈরি করুন
+              </Link>
+            </div>
           ) : (
             <ul className="mt-4 space-y-3">
-              {farms.map((farm) => (
-                <li
-                  key={farm.id}
-                  className="rounded-2xl border border-border bg-bg px-4 py-3"
-                >
-                  <p className="font-medium">{farm.name}</p>
-                  <p className="text-sm text-muted">
-                    {farm.district || "জেলা উল্লেখ নেই"}
-                    {Array.isArray(farm.sectors) && farm.sectors.length
-                      ? ` · ${farm.sectors.join(", ")}`
-                      : ""}
-                  </p>
-                </li>
-              ))}
+              {farms.map((farm) => {
+                const sectorNames = Array.isArray(farm.sectors)
+                  ? farm.sectors
+                      .map((id: string) => sectorLabel[id] || id)
+                      .join(", ")
+                  : "";
+                return (
+                  <li
+                    key={farm.id}
+                    className="rounded-2xl border border-border bg-bg px-4 py-3"
+                  >
+                    <p className="font-medium">{farm.name}</p>
+                    <p className="mt-1 text-sm text-muted">
+                      {farm.district || "জেলা উল্লেখ নেই"}
+                      {farm.area_acres != null ? ` · ${farm.area_acres} একর` : ""}
+                      {sectorNames ? ` · ${sectorNames}` : ""}
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
