@@ -101,20 +101,22 @@ export default async function DashboardPage() {
               {farms.map((farm) => {
                 const sectorNames = Array.isArray(farm.sectors)
                   ? farm.sectors
-                      .map((id: string) => sectorLabel[id] || id)
+                      .map((sid: string) => sectorLabel[sid] || sid)
                       .join(", ")
                   : "";
                 return (
-                  <li
-                    key={farm.id}
-                    className="rounded-2xl border border-border bg-bg px-4 py-3"
-                  >
-                    <p className="font-medium">{farm.name}</p>
-                    <p className="mt-1 text-sm text-muted">
-                      {farm.district || "জেলা উল্লেখ নেই"}
-                      {farm.area_acres != null ? ` · ${farm.area_acres} একর` : ""}
-                      {sectorNames ? ` · ${sectorNames}` : ""}
-                    </p>
+                  <li key={farm.id}>
+                    <Link
+                      href={`/farm/${farm.id}`}
+                      className="block rounded-2xl border border-border bg-bg px-4 py-3 transition hover:border-primary/40"
+                    >
+                      <p className="font-medium">{farm.name}</p>
+                      <p className="mt-1 text-sm text-muted">
+                        {farm.district || "জেলা উল্লেখ নেই"}
+                        {farm.area_acres != null ? ` · ${farm.area_acres} একর` : ""}
+                        {sectorNames ? ` · ${sectorNames}` : ""}
+                      </p>
+                    </Link>
                   </li>
                 );
               })}
